@@ -28,12 +28,15 @@ public class App {
                     tampilkanDataTransaksi();
                     break;
                 case 4:
+                    hapusDataTransaksi(scanner);
+                    break;
+                case 5:
                     System.out.println("Keluar dari aplikasi...");
                     break;
                 default:
                     System.out.println("Pilihan tidak valid. Silakan coba lagi.");
             }
-        } while (pilihan != 4);
+        } while (pilihan != 5);
 
         scanner.close();
     }
@@ -43,32 +46,88 @@ public class App {
         System.out.println("1. Insert Data Transaksi");
         System.out.println("2. Update Data Transaksi");
         System.out.println("3. Tampilkan Data Transaksi");
-        System.out.println("4. Keluar");
-        System.out.print("Pilih menu: ");
+        System.out.println("4. Hapus Data Transaksi");
+        System.out.println("5. Keluar");
+        System.out.printf("%nPilih menu: ");
     }
 
     private static void insertDataTransaksi(Scanner scanner) {
-        System.out.print("Tanggal Transaksi (YYYY-MM-DD): ");
-        String tanggalTransaksi = scanner.nextLine();
-        System.out.print("No Struk (KodeCabang-Tahun-NomorOrder: ");
-        String noStruk = scanner.nextLine();
-        System.out.print("Kode Cabang: ");
-        String kodeCabang = scanner.nextLine();
-        System.out.print("Tipe Transaksi: ");
-        String tipeTransaksi = scanner.nextLine();
-        System.out.print("Kode Produk: ");
-        String kodeProduk = scanner.nextLine();
-        System.out.print("Jumlah: ");
-        int jumlah = scanner.nextInt();
-        scanner.nextLine(); // Membersihkan buffer
+        String tanggalTransaksi, noStruk, kodeCabang, tipeTransaksi, kodeProduk;
+        int jumlah;
+
+        // Input Tanggal Transaksi dengan validasi
+        do {
+            System.out.print("Tanggal Transaksi (YYYY-MM-DD): ");
+            tanggalTransaksi = scanner.nextLine();
+            if (tanggalTransaksi.isEmpty()) {
+                System.out.println("Tanggal Transaksi tidak boleh kosong. Silakan coba lagi.");
+            }
+        } while (tanggalTransaksi.isEmpty());
+        
+        // Input No Struk dengan validasi
+        do {
+            System.out.print("No Struk (Kode_Cabang-Tahun-Nomor_Order): ");
+            noStruk = scanner.nextLine();
+            if (noStruk.isEmpty()) {
+                System.out.println("No Struk tidak boleh kosong. Silakan coba lagi.");
+            }
+        } while (noStruk.isEmpty());
+
+        // Menampilkan daftar cabang sebelum meminta input Kode_Cabang
+        tampilkanDaftarCabang();
+        
+        // Input Kode Cabang dengan validasi
+        do {
+            System.out.print("Kode Cabang: ");
+            kodeCabang = scanner.nextLine();
+            if (kodeCabang.isEmpty()) {
+                System.out.println("Kode Cabang tidak boleh kosong. Silakan coba lagi.");
+            }
+        } while (kodeCabang.isEmpty());
+
+        // Input Tipe Transaksi dengan validasi
+        do {
+            System.out.print("Tipe Transaksi: ");
+            tipeTransaksi = scanner.nextLine();
+            if (tipeTransaksi.isEmpty()) {
+                System.out.println("Tipe Transaksi tidak boleh kosong. Silakan coba lagi.");
+            }
+        } while (tipeTransaksi.isEmpty());
+
+        // Menampilkan daftar produk
+        tampilkanDaftarProduk();
+
+        // Input Kode Produk dengan validasi
+        do {
+            System.out.print("Kode Produk: ");
+            kodeProduk = scanner.nextLine();
+            if (kodeProduk.isEmpty()) {
+                System.out.println("Kode Produk tidak boleh kosong. Silakan coba lagi.");
+            }
+        } while (kodeProduk.isEmpty());
+
+        // Input Jumlah dengan validasi
+        do {
+            System.out.print("Jumlah: ");
+            if (scanner.hasNextInt()) {
+                jumlah = scanner.nextInt();
+                scanner.nextLine(); // Membersihkan buffer
+                if (jumlah <= 0) {
+                    System.out.println("Jumlah harus lebih besar dari 0. Silakan coba lagi.");
+                }
+            } else {
+                System.out.println("Input Jumlah tidak valid. Silakan masukkan angka.");
+                scanner.nextLine(); // Membersihkan buffer
+                jumlah = 0; // Menetapkan nilai awal agar loop berjalan lagi
+            }
+        } while (jumlah <= 0);
 
         String sql = "INSERT INTO Transaksi (Tanggal_Transaksi, No_Struk, Kode_Cabang, Tipe_Transaksi, Kode_Produk, Jumlah) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = ConnectionUtil.getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setString(1,
-                    tanggalTransaksi);
+            preparedStatement.setString(1, tanggalTransaksi);
             preparedStatement.setString(2, noStruk);
             preparedStatement.setString(3, kodeCabang);
             preparedStatement.setString(4, tipeTransaksi);
@@ -77,6 +136,59 @@ public class App {
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println(rowsAffected + " baris berhasil ditambahkan.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void tampilkanDaftarCabang() {
+        String sql = "SELECT Kode_Cabang, Nama_Cabang FROM Cabang";
+
+        try (Connection connection = ConnectionUtil.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery())
+        {
+
+            System.out.println("\nDaftar Cabang:");
+            System.out.println("+----------------------+----------------------+");
+            System.out.println("| Kode_Cabang          | Nama_Cabang          |");
+            System.out.println("+----------------------+----------------------+");
+
+            while (resultSet.next()) {
+                String kodeCabang = resultSet.getString("Kode_Cabang");
+                String namaCabang = resultSet.getString("Nama_Cabang");
+                System.out.printf("| %-20s | %-20s |\n", kodeCabang, namaCabang);
+            }
+
+            System.out.println("+----------------------+----------------------+");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void tampilkanDaftarProduk() {
+        String sql = "SELECT Kode_Produk, Nama_Produk, Harga_Satuan FROM Produk";
+
+        try (Connection connection = ConnectionUtil.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery())
+        {
+
+            System.out.println("\nDaftar Produk:");
+            System.out.println("+----------------------+----------------------+----------------------+");
+            System.out.println("| Kode_Produk          | Nama_Produk          | Harga_Satuan         |");
+            System.out.println("+----------------------+----------------------+----------------------+");
+
+            while (resultSet.next()) {
+                String kodeProduk = resultSet.getString("Kode_Produk");
+                String namaProduk = resultSet.getString("Nama_Produk");
+                int hargaSatuan = resultSet.getInt("Harga_Satuan");
+                System.out.printf("| %-20s | %-20s | %-20d |\n", kodeProduk, namaProduk, hargaSatuan);
+            }
+
+            System.out.println("+----------------------+----------------------+----------------------+");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,16 +210,18 @@ public class App {
             if (resultSet.next()) {
                 // Tampilkan data transaksi saat ini
                 System.out.println("Data transaksi saat ini:");
-                System.out.println("Tanggal Transaksi: " + resultSet.getDate("Tanggal Transaksi"));
-                System.out.println("Kode Cabang: " + resultSet.getString("Kode Cabang"));
-                System.out.println("Tipe Transaksi: " + resultSet.getString("Tipe Transaksi"));
-                System.out.println("Kode Produk: " + resultSet.getString("Kode Produk"));
+                System.out.println("Tanggal Transaksi: " + resultSet.getDate("Tanggal_Transaksi"));
+                System.out.println("Kode Cabang: " + resultSet.getString("Kode_Cabang"));
+                System.out.println("Tipe Transaksi: " + resultSet.getString("Tipe_Transaksi"));
+                System.out.println("Kode Produk: " + resultSet.getString("Kode_Produk"));
                 System.out.println("Jumlah: " + resultSet.getInt("Jumlah"));
 
                 // Minta input data baru dari pengguna
                 System.out.print("Tanggal Transaksi baru (YYYY-MM-DD, kosongkan jika tidak berubah): ");
                 String tanggalTransaksiBaru = scanner.nextLine();
-                System.out.print("Kode Cabang baru (kosongkan jika tidak berubah): ");
+                tampilkanDaftarProduk();
+                System.out.print("Kode Produk baru (kosongkan jika tidak berubah): ");
+                tampilkanDaftarCabang();
                 String kodeCabangBaru = scanner.nextLine();
                 System.out.print("Tipe Transaksi baru (kosongkan jika tidak berubah): ");
                 String tipeTransaksiBaru = scanner.nextLine();
@@ -196,18 +310,36 @@ public class App {
             System.out.println("| Tanggal Transaksi    | No Struk             | Kode Cabang          | Nama Cabang          | Tipe Transaksi       | Kode Produk          | Nama Produk          | Jumlah               | Harga Satuan         | Total_Penjualan      |");
             System.out.println("+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+");
 
+            // Variabel untuk menyimpan total penjualan berdasarkan tipe transaksi
+            int totalEatIn = 0;
+            int totalTakeAway = 0;
+            int totalOnline = 0;
+
             // Menampilkan data
             while (resultSet.next()) {
-                String tanggalTransaksi = resultSet.getString("Tanggal Transaksi");
-                String noStruk = resultSet.getString("No Struk");
-                String kodeCabang = resultSet.getString("Kode Cabang");
-                String namaCabang = resultSet.getString("Nama Cabang");
-                String tipeTransaksi = resultSet.getString("Tipe Transaksi");
-                String kodeProduk = resultSet.getString("Kode Produk");
-                String namaProduk = resultSet.getString("Nama Produk");
+                String tanggalTransaksi = resultSet.getString("Tanggal_Transaksi");
+                String noStruk = resultSet.getString("No_Struk");
+                String kodeCabang = resultSet.getString("Kode_Cabang");
+                String namaCabang = resultSet.getString("Nama_Cabang");
+                String tipeTransaksi = resultSet.getString("Tipe_Transaksi");
+                String kodeProduk = resultSet.getString("Kode_Produk");
+                String namaProduk = resultSet.getString("Nama_Produk");
                 int jumlah = resultSet.getInt("Jumlah");
-                int hargaSatuan = resultSet.getInt("Harga Satuan");
-                int totalPenjualan = resultSet.getInt("Total Penjualan");
+                int hargaSatuan = resultSet.getInt("Harga_Satuan");
+                int totalPenjualan = resultSet.getInt("Total_Penjualan");
+
+                // Menghitung total penjualan berdasarkan tipe transaksi
+                switch (tipeTransaksi) {
+                    case "Eat In":
+                        totalEatIn += totalPenjualan;
+                        break;
+                    case "Take Away":
+                        totalTakeAway += totalPenjualan;
+                        break;
+                    case "Online":
+                        totalOnline += totalPenjualan;
+                        break;
+                }
 
                 // Format output sesuai gambar
                 System.out.printf("| %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20d | %-20d | %-20d |\n",
@@ -217,8 +349,67 @@ public class App {
             // Footer tabel
             System.out.println("+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+----------------------+");
 
+            // Menampilkan total penjualan berdasarkan tipe transaksi
+            System.out.printf("%n%n");
+            System.out.println("Eat In: " + totalEatIn);
+            System.out.println("Take Away: " + totalTakeAway);
+            System.out.println("Online: " + totalOnline);
+            System.out.printf("%n%n");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    private static void hapusDataTransaksi(Scanner scanner) {
+
+        tampilkanDataTransaksi();
+
+        System.out.print("Masukkan No Struk transaksi yang akan dihapus: ");
+        String noStruk = scanner.nextLine();
+
+        // Tampilkan detail transaksi yang akan dihapus
+        String selectSql = "SELECT * FROM Transaksi WHERE No_Struk = ?";
+        try (Connection connection = ConnectionUtil.getDataSource().getConnection();
+             PreparedStatement selectStatement = connection.prepareStatement(selectSql)) {
+
+            selectStatement.setString(1, noStruk);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.next()) {
+                // Tampilkan detail transaksi
+                System.out.println("\nDetail transaksi yang akan dihapus:");
+                System.out.println("Tanggal Transaksi: " + resultSet.getDate("Tanggal_Transaksi"));
+                System.out.println("No Struk: " + resultSet.getString("No_Struk"));
+                System.out.println("Kode Cabang: " + resultSet.getString("Kode_Cabang"));
+                System.out.println("Tipe Transaksi: " + resultSet.getString("Tipe_Transaksi"));
+                System.out.println("Kode Produk: " + resultSet.getString("Kode_Produk"));
+                System.out.println("Jumlah: " + resultSet.getInt("Jumlah"));
+
+                // Konfirmasi penghapusan
+                System.out.print("\nApakah Anda yakin ingin menghapus transaksi ini? (y/n): ");
+                String konfirmasi = scanner.nextLine();
+
+                if (konfirmasi.equalsIgnoreCase("y")) {
+                    // Eksekusi penghapusan jika dikonfirmasi
+                    String deleteSql = "DELETE FROM Transaksi WHERE No_Struk = ?";
+                    try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
+                        deleteStatement.setString(1, noStruk);
+                        int rowsAffected = deleteStatement.executeUpdate();
+                        System.out.println(rowsAffected + " baris berhasil dihapus.");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("Penghapusan dibatalkan.");
+                }
+
+            } else {
+                System.out.println("Transaksi dengan No Struk " + noStruk + " tidak ditemukan.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+}
