@@ -12,12 +12,26 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         int pilihan;
 
+        // Tampilkan nilai default dan opsi untuk mengubah
+        System.out.println("Konfigurasi Koneksi Database saat ini:");
+        System.out.println("JDBC URL: " + ConnectionUtil.getJdbcUrl());
+        System.out.println("Username: " + ConnectionUtil.getUsername());
+        System.out.println("Password: " + ConnectionUtil.getPassword());
+        System.out.print("\nApakah Anda ingin mengubah konfigurasi koneksi? (y/n): ");
+
+        String pilihanUbah = scanner.nextLine();
+        if (pilihanUbah.equalsIgnoreCase("y")) {
+            ubahKonfigurasiKoneksi(scanner);
+        }
+
+        int pilihanMenu;
+
         do {
             tampilkanMenu();
-            pilihan = scanner.nextInt();
+            pilihanMenu = scanner.nextInt();
             scanner.nextLine(); // Membersihkan buffer
 
-            switch (pilihan) {
+            switch (pilihanMenu) {
                 case 1:
                     insertDataTransaksi(scanner);
                     break;
@@ -36,9 +50,24 @@ public class App {
                 default:
                     System.out.println("Pilihan tidak valid. Silakan coba lagi.");
             }
-        } while (pilihan != 5);
+        } while (pilihanMenu != 5);
 
         scanner.close();
+    }
+    
+    private static void ubahKonfigurasiKoneksi(Scanner scanner) {
+        System.out.print("Masukkan JDBC URL baru: ");
+        String jdbcUrlBaru = scanner.nextLine();
+        System.out.print("Masukkan username baru: ");
+        String usernameBaru = scanner.nextLine();
+        System.out.print("Masukkan password baru: ");
+        String passwordBaru = scanner.nextLine();
+
+        ConnectionUtil.setJdbcUrl(jdbcUrlBaru);
+        ConnectionUtil.setUsername(usernameBaru);
+        ConnectionUtil.setPassword(passwordBaru);
+
+        System.out.println("Konfigurasi koneksi berhasil diubah.");
     }
 
     private static void tampilkanMenu() {
