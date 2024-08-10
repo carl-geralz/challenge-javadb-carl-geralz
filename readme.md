@@ -23,24 +23,24 @@ Aplikasi konsol sederhana ini menyediakan fungsionalitas dasar untuk mengelola d
    - Sesuaikan koneksi database di `ConnectionUtil.java` dengan URL, username, dan password yang sesuai dengan konfigurasi MySQL Anda.
    - Pastikan tabel `Transaksi`, `Cabang`, dan `Produk` ada di database Anda dan memiliki struktur yang sesuai dengan query SQL yang digunakan dalam aplikasi.
 
-2. **Build:**
-   - Gunakan Maven untuk membangun proyek: `mvn clean install`
-
 ## Penggunaan
 
-1. **Jalankan Aplikasi:**
-   - Setelah membangun proyek, jalankan aplikasi dari baris perintah: `java -jar target/jdbc-exercise-1.0-SNAPSHOT.jar`
+1. **Eksekusi DDL dan DML:**
+   - Eksekusi DDL.sql lalu DML.sql untuk memasukkan data.
 
-2. **Menu:**
+2. **Kompilasi:**
+   - Kompilasi kode Java menggunakan perintah `javac ./App.java`.
+
+3. **Eksekusi:**
+   - Jalankan aplikasi menggunakan perintah `java ./App`.
+
+4. **Ikuti petunjuk:** 
+   - Aplikasi akan menampilkan menu. Pilih opsi yang diinginkan dan ikuti petunjuk untuk memasukkan atau mengubah data.
+
+5. **Menu:**
    - Aplikasi akan menampilkan menu dengan pilihan operasi:
-     - 1. `Insert Data Transaksi`
-     - 2. `Update Data Transaksi`
-     - 3. `Tampilkan Data Transaksi`
-     - 4. `Hapus Data Transaksi`
-     - 5. `Keluar`
-
-3. **Ikuti Petunjuk:**
-   - **Eksekusi DDL dan DML:** Eksekusi DDL.sql lalu DML.sql untuk memasukkan data.
-   - **Kompilasi:** Kompilasi kode Java menggunakan perintah javac App.java.
-   - **Eksekusi:** Jalankan aplikasi menggunakan perintah java App.
-   - **Ikuti petunjuk:** Aplikasi akan menampilkan menu. Pilih opsi yang diinginkan dan ikuti petunjuk untuk memasukkan atau mengubah data.
+     - `1. Insert Data Transaksi`
+     - `2. Update Data Transaksi`
+     - `3. Tampilkan Data Transaksi`
+     - `4. Hapus Data Transaksi`
+     - `5. Keluar`
