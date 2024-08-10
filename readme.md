@@ -12,8 +12,8 @@ Aplikasi konsol sederhana ini menyediakan fungsionalitas dasar untuk mengelola d
 
 ## Prasyarat
 
-- **Java Development Kit (JDK):** Pastikan Anda telah menginstal JDK versi yang sesuai (misalnya, JDK 11 atau lebih baru).
-- **MySQL:** Anda memerlukan server MySQL yang berjalan dan database yang telah disiapkan dengan tabel `Transaksi`, `Cabang`, dan `Produk`.
+- **Java Development Kit (JDK):** Pastikan Anda telah menginstal JDK versi 22.
+- **MySQL:** Anda memerlukan server MySQL yang berjalan dan database yang telah disiapkan dengan tabel `Transaksi`, `Cabang`, dan `Produk` (cek "Penggunaan" no 1. di bawah).
 - **MySQL Connector/J:** Sertakan driver MySQL Connector/J dalam proyek Anda (lihat `pom.xml`).
 - **HikariCP:** Sertakan library HikariCP untuk connection pooling (lihat `pom.xml`).
 
